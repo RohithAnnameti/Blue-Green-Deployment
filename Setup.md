@@ -33,7 +33,7 @@ Make sure that the controllers are deployed with unique service annotations so t
 2. Create Services and Deploy Applications in Both Namespaces Deploy your application and services in each namespace (namespace1 and namespace2).
 
 Example for namespace1:
-
+-------------------------------------------------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,4 +70,86 @@ spec:
  type: ClusterIP
 
 
+Repeat the same for namespace2, ensuring that the services and deployments are separate for versioning (e.g., app-v2)
 
+3. Create Ingress Resources for Each Namespace
+Next, define the Ingress resources in each namespace. This is where the routing between namespaces is managed.
+Ingress for namespace1:
+yaml
+
+apiVersion:
+networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: app-ingress
+ namespace: namespace1
+ annotations:
+nginx.ingress.kubernetes.io/rewrite-target:
+/
+spec:
+ rules:
+ - host:
+app.example.com
+   http:
+     paths:
+     - path: /
+       pathType: Prefix
+       backend:
+         service:
+           name: app-service
+           port:
+             number: 80
+
+
+Ingress for namespace2:
+yaml
+
+apiVersion:
+networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: app-ingress
+ namespace: namespace2
+ annotations:
+nginx.ingress.kubernetes.io/rewrite-target:
+/
+spec:
+ rules:
+ - host:
+app.example.com
+   http:
+     paths:
+     - path: /v2
+       pathType: Prefix
+       backend:
+         service:
+           name: app-service
+           port:
+             number: 80
+
+
+4. Configure the Application Gateway
+Now, set up routing on the Application Gateway to direct traffic based on hostnames or paths to the NGINX Ingress Controllers in each namespace.
+Option 1: Host-Based Routing
+If you want to route traffic based on different hostnames (e.g., app-v1.example.com and app-v2.example.com), configure the Application Gateway with host-based routing rules.
+1 For namespace1, route traffic to the NGINX Ingress Controller of namespace1 based on the hostname app-v1.example.com.
+2 For namespace2, route traffic to the NGINX Ingress Controller of namespace2 based on the hostname app-v2.example.com.
+In the Application Gateway’s settings:
+• Rule for app-v1.example.com : Forward traffic to the namespace1 NGINX Ingress IP.
+• Rule for app-v2.example.com : Forward traffic to the namespace2 NGINX Ingress IP.
+Option 2: Path-Based Routing
+If you want to route traffic based on different paths (e.g., /v1 and /v2), configure path-based routing on the Application Gateway.
+1 For namespace1, route traffic to the NGINX Ingress Controller of namespace1 for the path /v1.
+2 For namespace2, route traffic to the NGINX Ingress Controller of namespace2 for the path /v2.
+In the Application Gateway’s settings:
+• Rule for /v1 path : Forward traffic to the NGINX Ingress IP of namespace1.
+• Rule for /v2 path : Forward traffic to the NGINX Ingress IP of namespace2.
+5. Verify the Setup
+Once the Application Gateway is configured, verify that traffic is routed correctly:
+• For namespace1 : Access http://app.example.com/v1, and it should route traffic to namespace1.
+• For namespace2 : Access http://app.example.com/v2, and it should route traffic to namespace2.
+Summary:
+• NGINX Ingress Controllers: Deploy an NGINX Ingress Controller in each namespace.
+• Ingress Resources: Define separate Ingress resources for each namespace with different routing rules (e.g., paths or hosts).
+• Application Gateway: Use Azure Application Gateway to route traffic between the namespaces based on host or path-based rules.
+This setup allows you to use a single Application Gateway for routing traffic across multiple namespaces while leveraging NGINX Ingress for application-level routing.
