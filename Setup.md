@@ -42,33 +42,12 @@ https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/blue-deploy.ya
 Next, define the Ingress resources in each namespace. This is where the routing between namespaces is managed.
 Ingress for namespace1:
 
-
+https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/blue-ingress.yaml
 
 Ingress for namespace2:
-yaml
 
-apiVersion:
-networking.k8s.io/v1
-kind: Ingress
-metadata:
- name: app-ingress
- namespace: namespace2
- annotations:
-nginx.ingress.kubernetes.io/rewrite-target:
-/
-spec:
- rules:
- - host:
-app.example.com
-   http:
-     paths:
-     - path: /v2
-       pathType: Prefix
-       backend:
-         service:
-           name: app-service
-           port:
-             number: 80
+
+
 
 
 4. Configure the Application Gateway
