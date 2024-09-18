@@ -28,7 +28,6 @@ Install NGINX Ingress Controller in namespace2:
 bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml --namespace=namespace2
 
-
 Make sure that the controllers are deployed with unique service annotations so they don’t conflict with each other. You can also assign them different external IPs if necessary.
 2. Create Services and Deploy Applications in Both Namespaces Deploy your application and services in each namespace (namespace1 and namespace2).
 
@@ -46,9 +45,7 @@ https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/blue-ingress.y
 
 Ingress for namespace2:
 
-
-
-
+https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/green-ingress.yaml
 
 4. Configure the Application Gateway
 Now, set up routing on the Application Gateway to direct traffic based on hostnames or paths to the NGINX Ingress Controllers in each namespace.
