@@ -33,72 +33,15 @@ Make sure that the controllers are deployed with unique service annotations so t
 2. Create Services and Deploy Applications in Both Namespaces Deploy your application and services in each namespace (namespace1 and namespace2).
 
 Example for namespace1:
--------------------------------------------------------------------------------------
-apiVersion: apps/v1
-kind: Deployment
-metadata:
- name: app-deployment
- namespace: namespace1
-spec:
- replicas: 3
- selector:
-   matchLabels:
-     app: app-v1
- template:
-   metadata:
-     labels:
-       app: app-v1
-   spec:
-     containers:
-     - name: app-container
-       image: your-image:v1
-       ports:
-       - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
- name: app-service
- namespace: namespace1
-spec:
- selector:
-   app: app-v1
- ports:
- - protocol: TCP
-   port: 80
-   targetPort: 80
- type: ClusterIP
-
+https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/blue-deploy.yaml
 
 Repeat the same for namespace2, ensuring that the services and deployments are separate for versioning (e.g., app-v2)
+https://github.com/RohithAnnameti/Blue-Green-Deployment/blob/main/blue-deploy.yaml
 
 3. Create Ingress Resources for Each Namespace
 Next, define the Ingress resources in each namespace. This is where the routing between namespaces is managed.
 Ingress for namespace1:
-yaml
 
-apiVersion:
-networking.k8s.io/v1
-kind: Ingress
-metadata:
- name: app-ingress
- namespace: namespace1
- annotations:
-nginx.ingress.kubernetes.io/rewrite-target:
-/
-spec:
- rules:
- - host:
-app.example.com
-   http:
-     paths:
-     - path: /
-       pathType: Prefix
-       backend:
-         service:
-           name: app-service
-           port:
-             number: 80
 
 
 Ingress for namespace2:
